@@ -34,4 +34,12 @@ public class Book {
                 ", Author: '" + author + '\'' +
                 ", Year: " + year;
     }
+
+    public String getAuthor() {
+        return this.author;
+    }
+
+    public int getYear(){
+        return this.year;
+    }
 }

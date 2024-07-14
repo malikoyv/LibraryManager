@@ -39,6 +39,7 @@ public class Main {
                     viewAllBooks(library);
                     break;
                 case 3:
+                    updateDetails(library);
                     break;
                 case 4:
                     break;
@@ -86,35 +87,43 @@ public class Main {
         System.out.println(newBook);
 
         library.addBook(newBook);
-        System.out.println("Book was successfully added!\n" +
-                "Press Enter to continue.");
+        System.out.println("Book was successfully added!\n");
+        enterToContinue();
+    }
+
+    private static void enterToContinue() {
+        System.out.println("Press Enter to continue.");
         scanner().nextLine();
     }
 
     private static void viewAllBooks(Library library) {
         library.printAllBooks();
-        System.out.println("Press Enter to continue.");
-        scanner().nextLine();
+        enterToContinue();
     }
 
     private static void updateDetails(Library library){
+        List<Book> books = library.getBooks();
         System.out.println("Provide an id of a book you want to update: ");
+        for (Book b : books){
+            System.out.println(b);
+        }
         int seekingId = scanner().nextInt();
         Book updatingBook = null;
-        List<Book> books = library.getBooks();
 
         for (Book b : books){
             if (b.getId() == seekingId){
                 updatingBook = b;
             }
         }
-        int choice = scanner().nextInt();
+        int choice = 1;
         while (choice != 0){
-            System.out.println("What do you want to update: \n" +
-                    "1 - Title\n" +
-                    "2 - Author\n" +
-                    "3 - Year\n" +
-                    "0 - Quit");
+            System.out.println("""
+                    What do you want to update:\s
+                    1 - Title
+                    2 - Author
+                    3 - Year
+                    0 - Quit""");
+            choice = scanner().nextInt();
 
             switch (choice){
                 case 1:
@@ -124,6 +133,31 @@ public class Main {
                         System.out.println("Provide a new title!");
                     }
                     updatingBook.setTitle(newTitle);
+                    enterToContinue();
+                    break;
+                case 2:
+                    System.out.println("Provide a new author of the book: ");
+                    String newAuthor = scanner().nextLine();
+                    if (newAuthor.equals(updatingBook.getAuthor())){
+                        System.out.println("Provide a new author!");
+                    }
+                    updatingBook.setAuthor(newAuthor);
+                    enterToContinue();
+                    break;
+                case 3:
+                    System.out.println("Provide a new year of the book: ");
+                    int newYear = scanner().nextInt();
+                    if (newYear == updatingBook.getYear()){
+                        System.out.println("Provide a new author!");
+                    }
+                    updatingBook.setYear(newYear);
+                    enterToContinue();
+                    break;
+                case 0:
+                    break;
+                default:
+                    System.out.println("Choose a correct operation!");
+                    enterToContinue();
                     break;
             }
         }
