@@ -1,14 +1,17 @@
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
 
 
 public class Main {
+    private static final Scanner scannerInt = new Scanner(System.in);
+    private static final Scanner scannerString = new Scanner(System.in);
+
+
+    
     public static void main(String[] args) {
         userInterface();
-    }
-
-    private static Scanner scanner(){
-        return new Scanner(System.in);
     }
 
     private static void userInterface() {
@@ -16,6 +19,7 @@ public class Main {
         int authorId = 1;
         int choice = 1;
         Library library = new Library();
+
         while (choice != 0){
             System.out.println("Which operation do you want to perform: \n" +
                     "1 - Add a new book to the library.\n" +
@@ -28,7 +32,8 @@ public class Main {
                     "8 - Export a list of books.\n" +
                     "0 - Quit.\n" +
                     "Your choice: ");
-            choice = scanner().nextInt();
+            choice = scannerInt.nextInt();
+
             switch (choice){
                 case 1:
                     addBookToLibrary(library, bookId);
@@ -48,13 +53,16 @@ public class Main {
                     break;
                 case 6:
                     addAuthor(library, authorId);
+                    authorId++;
                     break;
                 case 7:
                     deleteAuthorAndBooks(library);
                     break;
                 case 8:
+                    exportBooksToCSV(library);
                     break;
                 case 0:
+                    System.out.println("Quiting...");
                     break;
                 default:
                     System.out.println("Choose a correct operation");
@@ -68,7 +76,8 @@ public class Main {
         newBook.setId(id);
 
         System.out.println("Provide a title of the book: ");
-        newBook.setTitle(scanner().nextLine());
+        String title = scannerString.nextLine();
+        newBook.setTitle(title);
 
         System.out.println("Choose an author: ");
         List<Author> authors = library.getAuthors();
@@ -90,7 +99,7 @@ public class Main {
 
         while (true){
             System.out.println("Provide a year: ");
-            int year = scanner().nextInt();
+            int year = scannerInt.nextInt();
             if (year > LocalDate.now().getYear() || year < 0){
                 System.out.println("Provide a correct year");
             } else {
@@ -109,7 +118,7 @@ public class Main {
 
     private static void enterToContinue() {
         System.out.println("Press Enter to continue.");
-        scanner().nextLine();
+        scannerString.nextLine();
     }
 
     private static void viewAllBooks(Library library) {
@@ -129,12 +138,12 @@ public class Main {
                     2 - Author
                     3 - Year
                     0 - Quit""");
-            choice = scanner().nextInt();
+            choice = scannerInt.nextInt();
 
             switch (choice){
                 case 1:
                     System.out.println("Provide a new title of the book: ");
-                    String newTitle = scanner().nextLine();
+                    String newTitle = scannerString.nextLine();
                     if (newTitle.equals(updatingBook.getTitle())){
                         System.out.println("Provide a new title!");
                     }
@@ -154,7 +163,7 @@ public class Main {
                     break;
                 case 3:
                     System.out.println("Provide a new year of the book: ");
-                    int newYear = scanner().nextInt();
+                    int newYear = scannerInt.nextInt();
                     if (newYear == updatingBook.getYear()){
                         System.out.println("Provide a new author!");
                     }
@@ -175,7 +184,7 @@ public class Main {
         for (Book b : books){
             System.out.println(b);
         }
-        int seekingId = scanner().nextInt();
+        int seekingId = scannerInt.nextInt();
         Book updatingBook = null;
         for (Book b : books){
             if (b.getId() == seekingId){
@@ -206,7 +215,7 @@ public class Main {
                 1 - Author.
                 2 - Title.
                 0 - Quit.""");
-            choice = scanner().nextInt();
+            choice = scannerInt.nextInt();
 
             switch (choice){
                 case 1:
@@ -215,7 +224,7 @@ public class Main {
                         System.out.println(a);
                     }
                     System.out.println("Enter author ID: ");
-                    int authorId = scanner().nextInt();
+                    int authorId = scannerInt.nextInt();
                     boolean found = false;
 
                     for (Author a : authors){
@@ -243,7 +252,7 @@ public class Main {
                     break;
                 case 2:
                     System.out.println("Enter title: ");
-                    String title = scanner().nextLine();
+                    String title = scannerString.nextLine();
                     for (Book b : books){
                         if (b.getTitle().equalsIgnoreCase(title)){
                             sortedList.add(b);
@@ -271,7 +280,7 @@ public class Main {
         }
 
         System.out.println("Enter author ID: ");
-        int authorId = scanner().nextInt();
+        int authorId = scannerInt.nextInt();
         Author selected = null;
         for (Author a : authors){
             if (a.getId() == authorId){
@@ -285,7 +294,7 @@ public class Main {
     private static void addAuthor(Library library, int id) {
         Author newAuthor = new Author();
         System.out.println("Provide a name of the author: ");
-        newAuthor.setName(scanner().nextLine());
+        newAuthor.setName(scannerString.nextLine());
         newAuthor.setId(id);
 
         library.addAuthor(newAuthor);
@@ -305,5 +314,26 @@ public class Main {
             System.out.println("Author not found!");
         }
         enterToContinue();
+    }
+
+    private static void exportBooksToCSV(Library library) {
+        String csvFile = "books.csv";
+        List<Book> books = library.getBooks();
+
+        try (FileWriter writer = new FileWriter(csvFile)) {
+            writer.append("ID,Title,Author,Year\n");
+
+            for (Book book : books) {
+                writer.append(String.valueOf(book.getId())).append(",");
+                writer.append(book.getTitle()).append(",");
+                writer.append(book.getAuthor().getName()).append(",");
+                writer.append(String.valueOf(book.getYear())).append("\n");
+            }
+
+            System.out.println("Books have been successfully exported to " + csvFile);
+            enterToContinue();
+        } catch (IOException e) {
+            System.err.println("Error while exporting books to CSV: " + e.getMessage());
+        }
     }
 }
