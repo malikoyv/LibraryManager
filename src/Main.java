@@ -1,8 +1,5 @@
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 
 public class Main {
@@ -53,6 +50,7 @@ public class Main {
                     addAuthor(library, authorId);
                     break;
                 case 7:
+                    deleteAuthorAndBooks(library);
                     break;
                 case 8:
                     break;
@@ -296,6 +294,16 @@ public class Main {
     }
 
     private static void deleteAuthorAndBooks(Library library){
+        List<Book> books = library.getBooks();
 
+        Author selected = showAuthorsAndAskId(library.getAuthors());
+        if (selected != null) {
+            books.removeIf(book -> book.getAuthor().equals(selected));
+            library.getAuthors().remove(selected);
+            System.out.println("Author and their books were successfully deleted!");
+        } else {
+            System.out.println("Author not found!");
+        }
+        enterToContinue();
     }
 }
