@@ -1,14 +1,14 @@
 public class Book implements Comparable<Book> {
     private Integer id;
     private String title;
-    private String author;
+    private Author author;
     private int year;
 
     public void setTitle(String title){
         this.title = title;
     }
 
-    public void setAuthor(String author) {
+    public void setAuthor(Author author) {
         this.author = author;
     }
 
@@ -31,11 +31,11 @@ public class Book implements Comparable<Book> {
     @Override
     public String toString() {
         return "Id: " + id + ", Title: '" + title + '\'' +
-                ", Author: '" + author + '\'' +
+                ", Author: '" + author.getName() + '\'' +
                 ", Year: " + year;
     }
 
-    public String getAuthor() {
+    public Author getAuthor() {
         return this.author;
     }
 

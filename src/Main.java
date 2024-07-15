@@ -15,7 +15,8 @@ public class Main {
     }
 
     private static void userInterface() {
-        int id = 1;
+        int bookId = 1;
+        int authorId = 1;
         int choice = 1;
         Library library = new Library();
         while (choice != 0){
@@ -33,8 +34,8 @@ public class Main {
             choice = scanner().nextInt();
             switch (choice){
                 case 1:
-                    addBookToLibrary(library, id);
-                    id++;
+                    addBookToLibrary(library, bookId);
+                    bookId++;
                     break;
                 case 2:
                     viewAllBooks(library);
@@ -49,6 +50,7 @@ public class Main {
                     filterBooks(library);
                     break;
                 case 6:
+                    addAuthor(library, authorId);
                     break;
                 case 7:
                     break;
@@ -70,8 +72,23 @@ public class Main {
         System.out.println("Provide a title of the book: ");
         newBook.setTitle(scanner().nextLine());
 
-        System.out.println("Provide an author: ");
-        newBook.setAuthor(scanner().nextLine());
+        System.out.println("Choose an author: ");
+        List<Author> authors = library.getAuthors();
+        Author selected;
+        if (authors.isEmpty()){
+            System.out.println("No authors available. Add a new author.");
+            addAuthor(library, 1);
+            selected = library.getAuthors().getFirst();
+        } else {
+            selected = showAuthorsAndAskId(authors);
+        }
+
+        if (selected == null){
+            System.out.println("Invalid author ID. Try add new author: ");
+            addAuthor(library, authors.size());
+            selected = library.getAuthors().get(authors.size() - 1);
+        }
+        newBook.setAuthor(selected);
 
         while (true){
             System.out.println("Provide a year: ");
@@ -128,11 +145,13 @@ public class Main {
                     break;
                 case 2:
                     System.out.println("Provide a new author of the book: ");
-                    String newAuthor = scanner().nextLine();
-                    if (newAuthor.equals(updatingBook.getAuthor())){
-                        System.out.println("Provide a new author!");
+                    List<Author> authors = library.getAuthors();
+                    if (authors.isEmpty()){
+                        System.out.println("No authors available. Add a new author.");
+                        addAuthor(library, 1);
                     }
-                    updatingBook.setAuthor(newAuthor);
+
+                    updatingBook.setAuthor(showAuthorsAndAskId(authors));
                     enterToContinue();
                     break;
                 case 3:
@@ -179,6 +198,7 @@ public class Main {
 
     private static void filterBooks(Library library){
         List<Book> books = library.getBooks();
+        List<Author> authors = library.getAuthors();
         int choice = 1;
         List<Book> sortedList = new ArrayList<>();
 
@@ -192,13 +212,30 @@ public class Main {
 
             switch (choice){
                 case 1:
-                    System.out.println("Enter author name: ");
-                    String authorName = scanner().nextLine();
-                    for (Book b : books){
-                        if (b.getAuthor().equalsIgnoreCase(authorName)){
-                            sortedList.add(b);
+                    System.out.println("Choose an author: ");
+                    for (Author a : authors){
+                        System.out.println(a);
+                    }
+                    System.out.println("Enter author ID: ");
+                    int authorId = scanner().nextInt();
+                    boolean found = false;
+
+                    for (Author a : authors){
+                        if (a.getId() == authorId){
+                            for (Book b : books){
+                                if (b.getAuthor() == a){
+                                    System.out.println(b);
+                                }
+                            }
+                            found = true;
+                            break;
                         }
                     }
+                    if (!found){
+                        System.out.println("Invalid author ID. Try again");
+                        break;
+                    }
+
                     Collections.sort(sortedList);
                     for (Book b : sortedList){
                         System.out.println(b);
@@ -207,7 +244,7 @@ public class Main {
                     enterToContinue();
                     break;
                 case 2:
-                    System.out.println("Enter author name: ");
+                    System.out.println("Enter title: ");
                     String title = scanner().nextLine();
                     for (Book b : books){
                         if (b.getTitle().equalsIgnoreCase(title)){
@@ -228,5 +265,37 @@ public class Main {
                     break;
             }
         }
+    }
+
+    private static Author showAuthorsAndAskId(List<Author> authors) {
+        for (Author a : authors){
+            System.out.println(a);
+        }
+
+        System.out.println("Enter author ID: ");
+        int authorId = scanner().nextInt();
+        Author selected = null;
+        for (Author a : authors){
+            if (a.getId() == authorId){
+                selected = a;
+                break;
+            }
+        }
+        return selected;
+    }
+
+    private static void addAuthor(Library library, int id) {
+        Author newAuthor = new Author();
+        System.out.println("Provide a name of the author: ");
+        newAuthor.setName(scanner().nextLine());
+        newAuthor.setId(id);
+
+        library.addAuthor(newAuthor);
+        System.out.println("New author was successfully added!");
+        enterToContinue();
+    }
+
+    private static void deleteAuthorAndBooks(Library library){
+
     }
 }
