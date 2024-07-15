@@ -1,5 +1,5 @@
-public class Book {
-    private int id;
+public class Book implements Comparable<Book> {
+    private Integer id;
     private String title;
     private String author;
     private int year;
@@ -41,5 +41,10 @@ public class Book {
 
     public int getYear(){
         return this.year;
+    }
+
+    @Override
+    public int compareTo(Book b) {
+        return this.id.compareTo(b.id);
     }
 }
