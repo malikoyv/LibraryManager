@@ -7,8 +7,7 @@ import java.util.*;
 public class Main {
     private static final Scanner scannerInt = new Scanner(System.in);
     private static final Scanner scannerString = new Scanner(System.in);
-
-
+    private static final Library library = new Library();
     
     public static void main(String[] args) {
         userInterface();
@@ -18,7 +17,6 @@ public class Main {
         int bookId = 1;
         int authorId = 1;
         int choice = 1;
-        Library library = new Library();
 
         while (choice != 0){
             System.out.println("Which operation do you want to perform: \n" +
@@ -36,30 +34,30 @@ public class Main {
 
             switch (choice){
                 case 1:
-                    addBookToLibrary(library, bookId);
+                    addBookToLibrary(bookId);
                     bookId++;
                     break;
                 case 2:
-                    viewAllBooks(library);
+                    viewAllBooks();
                     break;
                 case 3:
-                    updateDetails(library);
+                    updateDetails();
                     break;
                 case 4:
-                    deleteBook(library);
+                    deleteBook();
                     break;
                 case 5:
-                    filterBooks(library);
+                    filterBooks();
                     break;
                 case 6:
-                    addAuthor(library, authorId);
+                    addAuthor(authorId);
                     authorId++;
                     break;
                 case 7:
-                    deleteAuthorAndBooks(library);
+                    deleteAuthorAndBooks();
                     break;
                 case 8:
-                    exportBooksToCSV(library);
+                    exportBooksToCSV();
                     break;
                 case 0:
                     System.out.println("Quiting...");
@@ -71,12 +69,12 @@ public class Main {
         }
     }
 
-    private static void addBookToLibrary(Library library, int id) {
+    private static void addBookToLibrary(int id) {
         Book newBook = new Book();
         newBook.setId(id);
 
         System.out.println("Provide a title of the book: ");
-        String title = scannerString.nextLine();
+        String title = scannerString.nextLine().trim();
         newBook.setTitle(title);
 
         System.out.println("Choose an author: ");
@@ -84,7 +82,7 @@ public class Main {
         Author selected;
         if (authors.isEmpty()){
             System.out.println("No authors available. Add a new author.");
-            addAuthor(library, 1);
+            addAuthor(1);
             selected = library.getAuthors().getFirst();
         } else {
             selected = showAuthorsAndAskId(authors);
@@ -92,7 +90,7 @@ public class Main {
 
         if (selected == null){
             System.out.println("Invalid author ID. Try add new author: ");
-            addAuthor(library, authors.size());
+            addAuthor(authors.size());
             selected = library.getAuthors().get(authors.size() - 1);
         }
         newBook.setAuthor(selected);
@@ -121,12 +119,12 @@ public class Main {
         scannerString.nextLine();
     }
 
-    private static void viewAllBooks(Library library) {
+    private static void viewAllBooks() {
         library.printAllBooks();
         enterToContinue();
     }
 
-    private static void updateDetails(Library library){
+    private static void updateDetails(){
         List<Book> books = library.getBooks();
         System.out.println("Provide an id of a book you want to update: ");
         Book updatingBook = seekBook(books);
@@ -143,7 +141,7 @@ public class Main {
             switch (choice){
                 case 1:
                     System.out.println("Provide a new title of the book: ");
-                    String newTitle = scannerString.nextLine();
+                    String newTitle = scannerString.nextLine().trim();
                     if (newTitle.equals(updatingBook.getTitle())){
                         System.out.println("Provide a new title!");
                     }
@@ -155,7 +153,7 @@ public class Main {
                     List<Author> authors = library.getAuthors();
                     if (authors.isEmpty()){
                         System.out.println("No authors available. Add a new author.");
-                        addAuthor(library, 1);
+                        addAuthor(1);
                     }
 
                     updatingBook.setAuthor(showAuthorsAndAskId(authors));
@@ -194,7 +192,7 @@ public class Main {
         return updatingBook;
     }
 
-    private static void deleteBook(Library library) {
+    private static void deleteBook() {
         List<Book> books = library.getBooks();
         System.out.println("Provide an id of a book you want to delete: ");
         Book updatingBook = seekBook(books);
@@ -203,7 +201,7 @@ public class Main {
         enterToContinue();
     }
 
-    private static void filterBooks(Library library){
+    private static void filterBooks(){
         List<Book> books = library.getBooks();
         List<Author> authors = library.getAuthors();
         int choice = 1;
@@ -252,7 +250,7 @@ public class Main {
                     break;
                 case 2:
                     System.out.println("Enter title: ");
-                    String title = scannerString.nextLine();
+                    String title = scannerString.nextLine().trim();
                     for (Book b : books){
                         if (b.getTitle().equalsIgnoreCase(title)){
                             sortedList.add(b);
@@ -291,10 +289,10 @@ public class Main {
         return selected;
     }
 
-    private static void addAuthor(Library library, int id) {
+    private static void addAuthor(int id) {
         Author newAuthor = new Author();
         System.out.println("Provide a name of the author: ");
-        newAuthor.setName(scannerString.nextLine());
+        newAuthor.setName(scannerString.nextLine().trim());
         newAuthor.setId(id);
 
         library.addAuthor(newAuthor);
@@ -302,7 +300,7 @@ public class Main {
         enterToContinue();
     }
 
-    private static void deleteAuthorAndBooks(Library library){
+    private static void deleteAuthorAndBooks(){
         List<Book> books = library.getBooks();
 
         Author selected = showAuthorsAndAskId(library.getAuthors());
@@ -316,7 +314,7 @@ public class Main {
         enterToContinue();
     }
 
-    private static void exportBooksToCSV(Library library) {
+    private static void exportBooksToCSV() {
         String csvFile = "books.csv";
         List<Book> books = library.getBooks();
 
